@@ -53,40 +53,58 @@ export default async function SoAPage() {
   }
 
   return (
-    <main className="min-h-screen p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Statement of Applicability</h1>
-            <p className="text-gray-600">Decide which ISO 27001 controls apply to your organization</p>
+    <main className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/dashboard" className="text-slate-400 hover:text-slate-600 transition-colors">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+              </svg>
+            </Link>
+            <div>
+              <h1 className="text-lg font-semibold text-slate-900">Statement of Applicability</h1>
+              <p className="text-sm text-slate-500">Decide which ISO 27001 controls apply to your organization</p>
+            </div>
           </div>
-          <Link href="/dashboard" className="text-sm text-gray-500 hover:text-gray-700">
-            Back to Dashboard
-          </Link>
         </div>
+      </header>
 
+      <div className="max-w-5xl mx-auto px-6 py-8">
         {/* Summary */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
-            <div>
-              <div className="text-2xl font-bold text-gray-900">{totalControls}</div>
-              <div className="text-sm text-gray-500">Total Controls</div>
+        <div className="card p-6 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-slate-900">{totalControls}</div>
+              <div className="text-sm text-slate-500 mt-1">Total</div>
             </div>
-            <div>
-              <div className="text-2xl font-bold text-blue-600">{decidedControls}</div>
-              <div className="text-sm text-gray-500">Decided</div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-indigo-600">{decidedControls}</div>
+              <div className="text-sm text-slate-500 mt-1">Decided</div>
             </div>
-            <div>
-              <div className="text-2xl font-bold text-green-600">{applicableControls}</div>
-              <div className="text-sm text-gray-500">Applicable</div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-emerald-600">{applicableControls}</div>
+              <div className="text-sm text-slate-500 mt-1">Applicable</div>
             </div>
-            <div>
-              <div className="text-2xl font-bold text-gray-400">{notApplicableControls}</div>
-              <div className="text-sm text-gray-500">Not Applicable</div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-slate-400">{notApplicableControls}</div>
+              <div className="text-sm text-slate-500 mt-1">Not Applicable</div>
             </div>
-            <div>
-              <div className="text-2xl font-bold text-purple-600">{implementedControls}</div>
-              <div className="text-sm text-gray-500">Implemented</div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-violet-600">{implementedControls}</div>
+              <div className="text-sm text-slate-500 mt-1">Implemented</div>
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          <div className="mt-6 pt-6 border-t border-slate-100">
+            <div className="flex items-center justify-between text-sm mb-2">
+              <span className="text-slate-600">Decision Progress</span>
+              <span className="font-medium text-indigo-600">{Math.round((decidedControls / totalControls) * 100)}%</span>
+            </div>
+            <div className="progress-bar">
+              <div className="h-full bg-indigo-500 transition-all duration-500" style={{ width: `${(decidedControls / totalControls) * 100}%` }} />
             </div>
           </div>
         </div>
@@ -98,18 +116,27 @@ export default async function SoAPage() {
             if (categoryDecisions.length === 0) return null
 
             const categoryDecided = categoryDecisions.filter((d) => d.is_applicable !== null).length
+            const categoryPercent = Math.round((categoryDecided / categoryDecisions.length) * 100)
 
             return (
-              <div key={category} className="bg-white border border-gray-200 rounded-lg">
-                <div className="p-4 border-b border-gray-100">
+              <div key={category} className="card">
+                <div className="p-5 border-b border-slate-100">
                   <div className="flex items-center justify-between">
-                    <h2 className="font-semibold text-gray-900">{category} Controls</h2>
-                    <span className="text-sm text-gray-500">
-                      {categoryDecided} / {categoryDecisions.length} decided
-                    </span>
+                    <h2 className="font-semibold text-slate-900">{category} Controls</h2>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-slate-500">
+                        {categoryDecided} / {categoryDecisions.length}
+                      </span>
+                      <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-indigo-500 transition-all duration-300"
+                          style={{ width: `${categoryPercent}%` }}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="divide-y divide-gray-50">
+                <div className="divide-y divide-slate-50">
                   {categoryDecisions.map((decision) => (
                     <SoAControlRow key={decision.id} decision={decision} />
                   ))}

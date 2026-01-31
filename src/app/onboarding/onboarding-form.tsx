@@ -101,8 +101,8 @@ export default function OnboardingForm({ userId }: { userId: string }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-          Organization Name <span className="text-red-500">*</span>
+        <label htmlFor="name" className="label">
+          Organization Name <span className="text-rose-500">*</span>
         </label>
         <input
           id="name"
@@ -111,19 +111,19 @@ export default function OnboardingForm({ userId }: { userId: string }) {
           onChange={(e) => setName(e.target.value)}
           placeholder="Acme Inc."
           required
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+          className="input"
         />
       </div>
 
       <div>
-        <label htmlFor="industry" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="industry" className="label">
           Industry
         </label>
         <select
           id="industry"
           value={industry}
           onChange={(e) => setIndustry(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
+          className="input bg-white cursor-pointer"
         >
           <option value="">Select industry...</option>
           {INDUSTRIES.map((ind) => (
@@ -135,14 +135,14 @@ export default function OnboardingForm({ userId }: { userId: string }) {
       </div>
 
       <div>
-        <label htmlFor="employeeCount" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="employeeCount" className="label">
           Company Size
         </label>
         <select
           id="employeeCount"
           value={employeeCount}
           onChange={(e) => setEmployeeCount(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
+          className="input bg-white cursor-pointer"
         >
           <option value="">Select size...</option>
           {EMPLOYEE_COUNTS.map((size) => (
@@ -154,7 +154,7 @@ export default function OnboardingForm({ userId }: { userId: string }) {
       </div>
 
       <div>
-        <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="website" className="label">
           Website
         </label>
         <input
@@ -163,12 +163,12 @@ export default function OnboardingForm({ userId }: { userId: string }) {
           value={website}
           onChange={(e) => setWebsite(e.target.value)}
           placeholder="https://example.com"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+          className="input"
         />
       </div>
 
       {error && (
-        <div className="p-3 rounded-lg text-sm bg-red-50 text-red-700">
+        <div className="p-3 rounded-lg text-sm bg-rose-50 text-rose-700 border border-rose-100">
           {error}
         </div>
       )}
@@ -176,7 +176,7 @@ export default function OnboardingForm({ userId }: { userId: string }) {
       <button
         type="submit"
         disabled={loading || !name}
-        className="w-full py-3 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="btn-primary w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {loading ? 'Creating...' : 'Create Workspace'}
       </button>

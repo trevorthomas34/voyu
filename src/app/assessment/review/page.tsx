@@ -110,45 +110,66 @@ export default async function ReviewPage() {
   const isAlreadyCompleted = assessment.status === 'completed'
 
   return (
-    <main className="min-h-screen p-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Review Your Answers</h1>
-            <p className="text-gray-600">
-              {totalAnswered} of {questions?.length || 0} questions answered
-            </p>
+    <main className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200">
+        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/assessment" className="text-slate-400 hover:text-slate-600 transition-colors">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+              </svg>
+            </Link>
+            <div>
+              <h1 className="text-lg font-semibold text-slate-900">Review Your Answers</h1>
+              <p className="text-sm text-slate-500">
+                {totalAnswered} of {questions?.length || 0} questions answered
+              </p>
+            </div>
           </div>
-          <Link
-            href="/assessment"
-            className="text-sm text-gray-500 hover:text-gray-700"
-          >
-            Back to Overview
-          </Link>
         </div>
+      </header>
 
+      <div className="max-w-4xl mx-auto px-6 py-8">
         {!isComplete && (
-          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <p className="text-yellow-800 font-medium">Incomplete Assessment</p>
-            <p className="text-yellow-600 text-sm">
-              Please answer all required questions before completing the assessment.
-            </p>
+          <div className="mb-6 p-4 bg-amber-50 border border-amber-100 rounded-xl flex items-center gap-3">
+            <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-amber-800 font-medium">Incomplete Assessment</p>
+              <p className="text-amber-600 text-sm">
+                Please answer all required questions before completing the assessment.
+              </p>
+            </div>
           </div>
         )}
 
         {isAlreadyCompleted && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
-            <div>
-              <p className="text-green-800 font-medium">Assessment Completed</p>
-              <p className="text-green-600 text-sm">
-                Completed on {new Date(assessment.completed_at!).toLocaleDateString()}
-              </p>
+          <div className="mb-6 p-5 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-emerald-800 font-medium">Assessment Completed</p>
+                <p className="text-emerald-600 text-sm">
+                  Completed on {new Date(assessment.completed_at!).toLocaleDateString()}
+                </p>
+              </div>
             </div>
             <Link
               href="/documents"
-              className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700"
+              className="btn-primary inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700"
             >
-              Generate Documents &rarr;
+              Generate Documents
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
             </Link>
           </div>
         )}
@@ -165,27 +186,30 @@ export default async function ReviewPage() {
             }).length
 
             return (
-              <div key={section.key} className="bg-white border border-gray-200 rounded-lg">
-                <div className="flex items-center justify-between p-4 border-b border-gray-100">
+              <div key={section.key} className="card">
+                <div className="flex items-center justify-between p-5 border-b border-slate-100">
                   <div>
-                    <h2 className="font-semibold text-gray-900">{section.label}</h2>
-                    <p className="text-sm text-gray-500">
+                    <h2 className="font-semibold text-slate-900">{section.label}</h2>
+                    <p className="text-sm text-slate-500">
                       {sectionAnswered} of {sectionQuestions.length} answered
                     </p>
                   </div>
                   <Link
                     href={`/assessment/${section.key}`}
-                    className="text-sm text-blue-600 hover:text-blue-800"
+                    className="text-sm text-indigo-600 hover:text-indigo-700 font-medium inline-flex items-center gap-1"
                   >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                    </svg>
                     Edit
                   </Link>
                 </div>
 
-                <div className="divide-y divide-gray-50">
+                <div className="divide-y divide-slate-50">
                   {sectionQuestions.map((question) => (
-                    <div key={question.id} className="px-4 py-3">
-                      <p className="text-sm text-gray-600">{question.question_text}</p>
-                      <p className="text-sm font-medium text-gray-900 mt-1">
+                    <div key={question.id} className="px-5 py-4">
+                      <p className="text-sm text-slate-500">{question.question_text}</p>
+                      <p className="text-sm font-medium text-slate-900 mt-1">
                         {formatAnswer(question, answersMap[question.id])}
                       </p>
                     </div>

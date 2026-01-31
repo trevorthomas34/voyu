@@ -59,43 +59,50 @@ export default async function ChecklistPage() {
   }
 
   return (
-    <main className="min-h-screen p-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Implementation Checklist</h1>
-            <p className="text-gray-600">Track your ISO 27001 implementation progress</p>
+    <main className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200">
+        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/dashboard" className="text-slate-400 hover:text-slate-600 transition-colors">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+              </svg>
+            </Link>
+            <div>
+              <h1 className="text-lg font-semibold text-slate-900">Implementation Checklist</h1>
+              <p className="text-sm text-slate-500">Track your ISO 27001 implementation progress</p>
+            </div>
           </div>
-          <Link href="/dashboard" className="text-sm text-gray-500 hover:text-gray-700">
-            Back to Dashboard
-          </Link>
         </div>
+      </header>
 
+      <div className="max-w-4xl mx-auto px-6 py-8">
         {/* Progress Summary */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-gray-700">Overall Progress</span>
-            <span className="text-sm text-gray-500">
-              {completedItems} of {totalItems} completed ({progressPercent}%)
-            </span>
+        <div className="card p-6 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-sm font-semibold text-slate-900">Overall Progress</h2>
+              <p className="text-2xl font-bold text-emerald-600 mt-1">{progressPercent}%</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-slate-500">{completedItems} of {totalItems} completed</p>
+            </div>
           </div>
-          <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-green-500 transition-all duration-300"
-              style={{ width: `${progressPercent}%` }}
-            />
+          <div className="progress-bar h-3 mb-4">
+            <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
           </div>
-          <div className="flex gap-4 mt-3 text-sm">
-            <span className="text-gray-500">
-              <span className="inline-block w-3 h-3 bg-green-500 rounded-full mr-1"></span>
+          <div className="flex gap-6 text-sm">
+            <span className="flex items-center gap-2 text-slate-600">
+              <span className="w-3 h-3 bg-emerald-500 rounded-full"></span>
               Completed: {completedItems}
             </span>
-            <span className="text-gray-500">
-              <span className="inline-block w-3 h-3 bg-blue-500 rounded-full mr-1"></span>
+            <span className="flex items-center gap-2 text-slate-600">
+              <span className="w-3 h-3 bg-indigo-500 rounded-full"></span>
               In Progress: {inProgressItems}
             </span>
-            <span className="text-gray-500">
-              <span className="inline-block w-3 h-3 bg-gray-300 rounded-full mr-1"></span>
+            <span className="flex items-center gap-2 text-slate-600">
+              <span className="w-3 h-3 bg-slate-200 rounded-full"></span>
               Pending: {totalItems - completedItems - inProgressItems}
             </span>
           </div>
@@ -108,18 +115,27 @@ export default async function ChecklistPage() {
             if (categoryItems.length === 0) return null
 
             const categoryCompleted = categoryItems.filter((i) => i.status === 'completed').length
+            const categoryPercent = Math.round((categoryCompleted / categoryItems.length) * 100)
 
             return (
-              <div key={category} className="bg-white border border-gray-200 rounded-lg">
-                <div className="p-4 border-b border-gray-100">
+              <div key={category} className="card">
+                <div className="p-5 border-b border-slate-100">
                   <div className="flex items-center justify-between">
-                    <h2 className="font-semibold text-gray-900">{CATEGORY_LABELS[category]}</h2>
-                    <span className="text-sm text-gray-500">
-                      {categoryCompleted} / {categoryItems.length}
-                    </span>
+                    <h2 className="font-semibold text-slate-900">{CATEGORY_LABELS[category]}</h2>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-slate-500">
+                        {categoryCompleted} / {categoryItems.length}
+                      </span>
+                      <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-emerald-500 transition-all duration-300"
+                          style={{ width: `${categoryPercent}%` }}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="divide-y divide-gray-50">
+                <div className="divide-y divide-slate-50">
                   {categoryItems.map((item) => (
                     <ChecklistItemRow key={item.id} item={item} />
                   ))}

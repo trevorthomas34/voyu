@@ -104,31 +104,42 @@ export default async function AssessmentHubPage() {
   const isCompleted = assessment.status === 'completed'
 
   return (
-    <main className="min-h-screen p-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">ISO 27001 Assessment</h1>
-            <p className="text-gray-600">Complete the assessment to generate your documentation</p>
+    <main className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/dashboard" className="text-slate-400 hover:text-slate-600 transition-colors">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+              </svg>
+            </Link>
+            <div>
+              <h1 className="text-lg font-semibold text-slate-900">ISO 27001 Assessment</h1>
+              <p className="text-sm text-slate-500">Complete the assessment to generate documentation</p>
+            </div>
           </div>
-          <Link
-            href="/dashboard"
-            className="text-sm text-gray-500 hover:text-gray-700"
-          >
-            Back to Dashboard
-          </Link>
         </div>
+      </header>
 
+      <div className="max-w-5xl mx-auto px-6 py-8">
         {isCompleted && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-green-800 font-medium">Assessment Completed</p>
-            <p className="text-green-600 text-sm">You can still review or update your answers.</p>
+          <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center gap-3">
+            <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-emerald-800 font-medium">Assessment Completed</p>
+              <p className="text-emerald-600 text-sm">You can still review or update your answers.</p>
+            </div>
           </div>
         )}
 
         <div className="grid gap-6 md:grid-cols-3">
           <div className="md:col-span-2 space-y-3">
-            {ASSESSMENT_SECTIONS.map((section) => {
+            {ASSESSMENT_SECTIONS.map((section, index) => {
               const answered = answeredBySection[section.key] || 0
               const total = totalBySection[section.key] || 0
               const isComplete = answered === total && total > 0
@@ -138,30 +149,41 @@ export default async function AssessmentHubPage() {
                 <Link
                   key={section.key}
                   href={`/assessment/${section.key}`}
-                  className={`block p-4 rounded-lg border transition-colors ${
-                    isCurrent
-                      ? 'border-blue-300 bg-blue-50'
-                      : isComplete
-                      ? 'border-green-200 bg-green-50'
-                      : 'border-gray-200 bg-white hover:border-gray-300'
+                  className={`card-hover p-5 flex items-center gap-4 ${
+                    isCurrent ? 'ring-2 ring-indigo-500 ring-offset-2' : ''
                   }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium text-gray-900">{section.label}</h3>
-                      <p className="text-sm text-gray-500">
-                        {answered} of {total} questions answered
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {isComplete && (
-                        <span className="text-green-600 text-sm font-medium">Complete</span>
-                      )}
-                      {isCurrent && !isComplete && (
-                        <span className="text-blue-600 text-sm font-medium">In Progress</span>
-                      )}
-                      <span className="text-gray-400">&rarr;</span>
-                    </div>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    isComplete
+                      ? 'bg-emerald-100 text-emerald-600'
+                      : isCurrent
+                      ? 'bg-indigo-100 text-indigo-600'
+                      : 'bg-slate-100 text-slate-500'
+                  }`}>
+                    {isComplete ? (
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                    ) : (
+                      <span className="text-sm font-semibold">{index + 1}</span>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-slate-900">{section.label}</h3>
+                    <p className="text-sm text-slate-500">
+                      {answered} of {total} questions answered
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {isComplete && (
+                      <span className="text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-1 rounded-full">Complete</span>
+                    )}
+                    {isCurrent && !isComplete && (
+                      <span className="text-xs font-medium text-indigo-700 bg-indigo-50 px-2 py-1 rounded-full">In Progress</span>
+                    )}
+                    <svg className="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
                   </div>
                 </Link>
               )
@@ -169,15 +191,20 @@ export default async function AssessmentHubPage() {
 
             <Link
               href="/assessment/review"
-              className="block p-4 rounded-lg border border-gray-200 bg-white hover:border-gray-300 transition-colors mt-6"
+              className="card-hover p-5 flex items-center gap-4 mt-4 bg-slate-50 border-dashed"
             >
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium text-gray-900">Review & Complete</h3>
-                  <p className="text-sm text-gray-500">Review all answers and complete the assessment</p>
-                </div>
-                <span className="text-gray-400">&rarr;</span>
+              <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
               </div>
+              <div className="flex-1">
+                <h3 className="font-medium text-slate-900">Review & Complete</h3>
+                <p className="text-sm text-slate-500">Review all answers and finalize the assessment</p>
+              </div>
+              <svg className="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
             </Link>
           </div>
 

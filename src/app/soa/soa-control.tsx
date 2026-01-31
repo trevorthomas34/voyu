@@ -71,31 +71,45 @@ export default function SoAControlRow({ decision }: SoAControlRowProps) {
   }
 
   return (
-    <div className="p-4">
+    <div className="p-5 hover:bg-slate-50/50 transition-colors">
       <div className="flex items-start gap-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-mono text-gray-500">{decision.control.control_id}</span>
-            <h3 className="font-medium text-gray-900">{decision.control.control_name}</h3>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs font-mono text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">{decision.control.control_id}</span>
+            <h3 className="font-medium text-slate-900">{decision.control.control_name}</h3>
           </div>
           <button
             onClick={() => setShowDetails(!showDetails)}
-            className="text-sm text-blue-600 hover:text-blue-800 mt-1"
+            className="text-sm text-slate-500 hover:text-slate-700 mt-1 inline-flex items-center gap-1"
           >
-            {showDetails ? 'Hide details' : 'Show details'}
+            {showDetails ? (
+              <>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                </svg>
+                Hide details
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+                Show details
+              </>
+            )}
           </button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           {/* Applicable toggle */}
-          <div className="flex rounded-lg border border-gray-200 overflow-hidden">
+          <div className="flex rounded-lg overflow-hidden shadow-sm">
             <button
               onClick={() => handleApplicableChange(true)}
               disabled={saving}
               className={`px-3 py-1.5 text-sm font-medium transition-colors ${
                 isApplicable === true
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
+                  ? 'bg-emerald-500 text-white'
+                  : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
               }`}
             >
               Applicable
@@ -103,10 +117,10 @@ export default function SoAControlRow({ decision }: SoAControlRowProps) {
             <button
               onClick={() => handleApplicableChange(false)}
               disabled={saving}
-              className={`px-3 py-1.5 text-sm font-medium transition-colors border-l border-gray-200 ${
+              className={`px-3 py-1.5 text-sm font-medium transition-colors ${
                 isApplicable === false
-                  ? 'bg-gray-200 text-gray-700'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
+                  ? 'bg-slate-500 text-white'
+                  : 'bg-white text-slate-600 hover:bg-slate-50 border border-l-0 border-slate-200'
               }`}
             >
               N/A
@@ -119,7 +133,13 @@ export default function SoAControlRow({ decision }: SoAControlRowProps) {
               value={implStatus || 'not_started'}
               onChange={(e) => handleImplStatusChange(e.target.value as ImplementationStatus)}
               disabled={saving}
-              className="px-3 py-1.5 text-sm font-medium rounded-lg border border-gray-200 bg-white"
+              className={`px-3 py-1.5 text-xs font-medium rounded-full border-0 cursor-pointer ${
+                implStatus === 'implemented'
+                  ? 'bg-emerald-50 text-emerald-700'
+                  : implStatus === 'in_progress'
+                  ? 'bg-indigo-50 text-indigo-700'
+                  : 'bg-slate-100 text-slate-600'
+              }`}
             >
               {IMPL_STATUS_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -133,14 +153,14 @@ export default function SoAControlRow({ decision }: SoAControlRowProps) {
 
       {/* Details panel */}
       {showDetails && (
-        <div className="mt-4 pl-4 border-l-2 border-gray-100">
-          <p className="text-sm text-gray-600 mb-3">{decision.control.control_description}</p>
+        <div className="mt-4 ml-0 pl-4 border-l-2 border-indigo-100">
+          <p className="text-sm text-slate-600 leading-relaxed mb-4">{decision.control.control_description}</p>
 
           {/* Justification (required if not applicable) */}
-          <div className="mt-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div>
+            <label className="label">
               Justification
-              {isApplicable === false && <span className="text-red-500 ml-1">*</span>}
+              {isApplicable === false && <span className="text-rose-500 ml-1">*</span>}
             </label>
             <div className="flex gap-2">
               <input
@@ -151,20 +171,18 @@ export default function SoAControlRow({ decision }: SoAControlRowProps) {
                   setJustificationError(false)
                 }}
                 placeholder={isApplicable === false ? 'Required: explain why not applicable' : 'Optional notes'}
-                className={`flex-1 px-3 py-2 text-sm border rounded-lg ${
-                  justificationError ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                }`}
+                className={`input flex-1 ${justificationError ? 'border-rose-300 bg-rose-50' : ''}`}
               />
               <button
                 onClick={handleJustificationSave}
                 disabled={saving}
-                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                className="btn-primary disabled:opacity-50"
               >
                 Save
               </button>
             </div>
             {justificationError && (
-              <p className="text-sm text-red-600 mt-1">Justification is required when marking as not applicable</p>
+              <p className="text-sm text-rose-600 mt-1.5">Justification is required when marking as not applicable</p>
             )}
           </div>
         </div>
