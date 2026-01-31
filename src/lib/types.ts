@@ -131,3 +131,58 @@ export const DOCUMENT_DEFINITIONS: { type: DocumentType; title: string }[] = [
   { type: 'business_continuity_overview', title: 'Business Continuity Overview' },
   { type: 'implementation_checklist', title: 'Implementation Checklist' },
 ]
+
+// Checklist types
+
+export type ChecklistCategory = 'preparation' | 'documentation' | 'implementation' | 'review'
+export type ChecklistStatus = 'pending' | 'in_progress' | 'completed'
+
+export interface ChecklistTemplate {
+  id: string
+  template_key: string
+  title: string
+  description: string | null
+  category: ChecklistCategory
+  sort_order: number
+  created_at: string
+}
+
+export interface WorkspaceChecklistItem {
+  id: string
+  workspace_id: string
+  template_id: string
+  status: ChecklistStatus
+  completed_at: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+  template?: ChecklistTemplate
+}
+
+// SoA types
+
+export type SoACategory = 'Organizational' | 'People' | 'Physical' | 'Technological'
+export type ImplementationStatus = 'not_started' | 'in_progress' | 'implemented'
+
+export interface SoAControl {
+  id: string
+  control_id: string
+  control_name: string
+  control_description: string
+  category: SoACategory
+  is_core: boolean
+  sort_order: number
+  created_at: string
+}
+
+export interface WorkspaceSoADecision {
+  id: string
+  workspace_id: string
+  control_id: string
+  is_applicable: boolean | null
+  justification: string | null
+  implementation_status: ImplementationStatus | null
+  created_at: string
+  updated_at: string
+  control?: SoAControl
+}

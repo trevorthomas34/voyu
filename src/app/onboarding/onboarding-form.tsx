@@ -40,19 +40,59 @@ export default function OnboardingForm({ userId }: { userId: string }) {
 
     const supabase = createClient()
 
-    const { error: insertError } = await supabase.from('workspaces').insert({
-      user_id: userId,
-      name,
-      industry: industry || null,
-      employee_count: employeeCount || null,
-      website: website || null,
-      onboarding_completed_at: new Date().toISOString(),
-    })
+    // Create workspace
+    const { data: workspace, error: insertError } = await supabase
+      .from('workspaces')
+      .insert({
+        user_id: userId,
+        name,
+        industry: industry || null,
+        employee_count: employeeCount || null,
+        website: website || null,
+        onboarding_completed_at: new Date().toISOString(),
+      })
+      .select('id')
+      .single()
 
-    if (insertError) {
-      setError(insertError.message)
+    if (insertError || !workspace) {
+      setError(insertError?.message || 'Failed to create workspace')
       setLoading(false)
       return
+    }
+
+    // Initialize checklist items (idempotent via upsert)
+    const { data: checklistTemplates } = await supabase
+      .from('checklist_templates')
+      .select('id')
+
+    if (checklistTemplates && checklistTemplates.length > 0) {
+      const checklistItems = checklistTemplates.map((t) => ({
+        workspace_id: workspace.id,
+        template_id: t.id,
+        status: 'pending',
+      }))
+
+      await supabase
+        .from('workspace_checklist_items')
+        .upsert(checklistItems, { onConflict: 'workspace_id,template_id' })
+    }
+
+    // Initialize SoA decisions (idempotent via upsert)
+    const { data: soaControls } = await supabase
+      .from('soa_controls')
+      .select('id')
+
+    if (soaControls && soaControls.length > 0) {
+      const soaDecisions = soaControls.map((c) => ({
+        workspace_id: workspace.id,
+        control_id: c.id,
+        is_applicable: null,
+        implementation_status: null,
+      }))
+
+      await supabase
+        .from('workspace_soa_decisions')
+        .upsert(soaDecisions, { onConflict: 'workspace_id,control_id' })
     }
 
     router.push('/dashboard')

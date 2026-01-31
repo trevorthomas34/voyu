@@ -63,6 +63,37 @@ export default async function DashboardPage() {
   const documentCount = totalDocs || 0
   const readyDocCount = readyDocs || 0
 
+  // Get checklist progress
+  const { count: totalChecklist } = await supabase
+    .from('workspace_checklist_items')
+    .select('*', { count: 'exact', head: true })
+    .eq('workspace_id', workspace.id)
+
+  const { count: completedChecklist } = await supabase
+    .from('workspace_checklist_items')
+    .select('*', { count: 'exact', head: true })
+    .eq('workspace_id', workspace.id)
+    .eq('status', 'completed')
+
+  const checklistTotal = totalChecklist || 0
+  const checklistCompleted = completedChecklist || 0
+  const checklistPercent = checklistTotal > 0 ? Math.round((checklistCompleted / checklistTotal) * 100) : 0
+
+  // Get SoA progress
+  const { count: totalSoA } = await supabase
+    .from('workspace_soa_decisions')
+    .select('*', { count: 'exact', head: true })
+    .eq('workspace_id', workspace.id)
+
+  const { data: decidedSoA } = await supabase
+    .from('workspace_soa_decisions')
+    .select('id')
+    .eq('workspace_id', workspace.id)
+    .not('is_applicable', 'is', null)
+
+  const soaTotal = totalSoA || 0
+  const soaDecided = decidedSoA?.length || 0
+
   const assessmentProgress = totalQuestions > 0 ? Math.round((responseCount / totalQuestions) * 100) : 0
 
   return (
@@ -77,6 +108,7 @@ export default async function DashboardPage() {
         </header>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Organization */}
           <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
             <h2 className="font-semibold text-gray-900 mb-2">Organization</h2>
             <dl className="space-y-1 text-sm">
@@ -88,24 +120,10 @@ export default async function DashboardPage() {
                 <dt className="text-gray-500">Size</dt>
                 <dd className="text-gray-900">{workspace.employee_count || '—'}</dd>
               </div>
-              {workspace.website && (
-                <div className="flex justify-between">
-                  <dt className="text-gray-500">Website</dt>
-                  <dd className="text-gray-900 truncate max-w-[150px]">
-                    <a
-                      href={workspace.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      {workspace.website.replace(/^https?:\/\//, '')}
-                    </a>
-                  </dd>
-                </div>
-              )}
             </dl>
           </div>
 
+          {/* Assessment */}
           <Link
             href="/assessment"
             className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm hover:border-blue-300 hover:shadow transition-all"
@@ -125,23 +143,15 @@ export default async function DashboardPage() {
               </>
             ) : (
               <>
-                <p className="text-sm text-gray-500">In Progress</p>
-                <div className="mt-2">
-                  <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                    <span>{responseCount} of {totalQuestions} answered</span>
-                    <span>{assessmentProgress}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-blue-600 transition-all"
-                      style={{ width: `${assessmentProgress}%` }}
-                    />
-                  </div>
+                <p className="text-sm text-gray-500">In Progress ({assessmentProgress}%)</p>
+                <div className="mt-2 w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-600" style={{ width: `${assessmentProgress}%` }} />
                 </div>
               </>
             )}
           </Link>
 
+          {/* Documents */}
           <Link
             href="/documents"
             className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm hover:border-blue-300 hover:shadow transition-all"
@@ -163,12 +173,57 @@ export default async function DashboardPage() {
               </>
             )}
           </Link>
+
+          {/* Checklist */}
+          <Link
+            href="/checklist"
+            className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm hover:border-blue-300 hover:shadow transition-all"
+          >
+            <h2 className="font-semibold text-gray-900 mb-2">Checklist</h2>
+            {checklistTotal === 0 ? (
+              <p className="text-sm text-gray-500">No checklist items</p>
+            ) : (
+              <>
+                <p className="text-sm text-gray-700">
+                  <span className="font-medium text-green-600">{checklistPercent}%</span> complete
+                </p>
+                <div className="mt-2 w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-green-500" style={{ width: `${checklistPercent}%` }} />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {checklistCompleted} of {checklistTotal} items
+                </p>
+              </>
+            )}
+          </Link>
+
+          {/* SoA */}
+          <Link
+            href="/soa"
+            className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm hover:border-blue-300 hover:shadow transition-all"
+          >
+            <h2 className="font-semibold text-gray-900 mb-2">Statement of Applicability</h2>
+            {soaTotal === 0 ? (
+              <p className="text-sm text-gray-500">No controls</p>
+            ) : (
+              <>
+                <p className="text-sm text-gray-700">
+                  <span className="font-medium text-blue-600">{soaDecided}</span> of {soaTotal} decided
+                </p>
+                <div className="mt-2 w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-blue-500"
+                    style={{ width: `${Math.round((soaDecided / soaTotal) * 100)}%` }}
+                  />
+                </div>
+              </>
+            )}
+          </Link>
         </div>
 
-        <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
-          <p className="text-sm text-blue-800">
-            <strong>Milestone 3A Complete:</strong> Document generation with HTML previews.
-            12 document templates populated from assessment data.
+        <div className="mt-8 p-4 bg-green-50 rounded-lg border border-green-100">
+          <p className="text-sm text-green-800">
+            <strong>All Milestones Complete:</strong> Assessment, document generation, implementation checklist, and Statement of Applicability are fully functional.
           </p>
         </div>
       </div>
